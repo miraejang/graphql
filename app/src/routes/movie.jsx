@@ -40,6 +40,7 @@ const GET_MOVIE = gql`
       medium_cover_image
       rating
       summary
+      isLiked @client
     }
   }
 `;
@@ -57,6 +58,7 @@ const Movie = () => {
       <Column>
         <Title>{loading ? 'Loading...' : `${data?.movie?.title}`}</Title>
         <Subtitle>{data?.movie && `⭐️ ${data.movie.rating}`}</Subtitle>
+        <button>{data?.movie?.isLiked ? 'Unlike' : 'Like'}</button>
       </Column>
       <Image src={data?.movie?.medium_cover_image} alt={data?.movie?.title} />
       <Description>{data?.movie?.summary}</Description>
