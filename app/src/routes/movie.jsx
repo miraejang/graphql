@@ -47,18 +47,36 @@ const GET_MOVIE = gql`
 
 const Movie = () => {
   const { id } = useParams();
-  const { loading, data } = useQuery(GET_MOVIE, {
+  const {
+    loading,
+    data,
+    client: { cache },
+  } = useQuery(GET_MOVIE, {
     variables: {
       movieId: id,
     },
   });
+
+  const onClickLike = () => {
+    cache.writeFragment({
+      id: `Movie:${id}`,
+      fragment: gql`
+        fragment MovieFragment on Movie {
+          isLiked
+        }
+      `,
+      data: {
+        isLiked: !data.movie.isLiked,
+      },
+    });
+  };
 
   return (
     <Container>
       <Column>
         <Title>{loading ? 'Loading...' : `${data?.movie?.title}`}</Title>
         <Subtitle>{data?.movie && `⭐️ ${data.movie.rating}`}</Subtitle>
-        <button>{data?.movie?.isLiked ? 'Unlike' : 'Like'}</button>
+        {data?.movie && <button onClick={onClickLike}>{data?.movie?.isLiked ? 'Unlike' : 'Like'}</button>}
       </Column>
       <Image src={data?.movie?.medium_cover_image} alt={data?.movie?.title} />
       <Description>{data?.movie?.summary}</Description>
